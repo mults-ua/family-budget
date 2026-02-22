@@ -1,0 +1,32 @@
+# Google Apps Script — backend lives in GAS editor only
+Code.gs
+
+# Secrets / config
+.env
+.env.*
+*.env
+config.local.js
+secrets.js
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / tools
+.vscode/
+.idea/
+.claude/
+*.suo
+*.user
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies (not used, safe default)
+node_modules/
+
+# Build artifacts (not used, safe default)
+dist/
+build/
