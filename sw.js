@@ -1,7 +1,7 @@
 // Family Budget — Service Worker
 // Caches app shell, network-first for API calls
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `family-budget-${CACHE_VERSION}`;
 
 // Derive base path from SW location so this works both locally and on
