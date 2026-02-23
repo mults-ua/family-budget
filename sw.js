@@ -1,19 +1,23 @@
 // Family Budget — Service Worker
 // Caches app shell, network-first for API calls
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `family-budget-${CACHE_VERSION}`;
 
+// Derive base path from SW location so this works both locally and on
+// GitHub Pages (/family-budget/) without hardcoding the subdirectory.
+const BASE_PATH = new URL('./', self.location.href).pathname;
+
 const CACHE_URLS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/app/api.js',
-  '/app/currency.js',
-  '/app/tags.js',
-  '/app/add.js',
-  '/app/history.js',
-  '/app/charts.js'
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'manifest.json',
+  BASE_PATH + 'app/api.js',
+  BASE_PATH + 'app/currency.js',
+  BASE_PATH + 'app/tags.js',
+  BASE_PATH + 'app/add.js',
+  BASE_PATH + 'app/history.js',
+  BASE_PATH + 'app/charts.js'
 ];
 
 // ============================================================================
@@ -106,7 +110,7 @@ self.addEventListener('fetch', (event) => {
       }).catch(() => {
         // Fallback for offline app shell
         if (event.request.destination === 'document') {
-          return caches.match('/index.html');
+          return caches.match(BASE_PATH + 'index.html');
         }
         return new Response('Offline: Resource not cached.', {
           status: 503,
