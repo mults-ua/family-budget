@@ -1,7 +1,7 @@
 // Family Budget — Frontend API Wrapper
 // Update GAS_URL below with your deployed Google Apps Script Web App URL
 
-const GAS_URL = 'https://script.google.com/a/macros/ua-2.net/s/AKfycbzlaNqXlT72GVQ6qLrSFWOSRB1FVx_cn9b0BaEEq9scbHIPF1NP8oZQq8kh6YQElJQ/exec';
+const GAS_URL = '__GAS_URL__';
 
 // ============================================================================
 // GET Endpoints
@@ -16,7 +16,7 @@ export async function fetchTransactions(filters = {}) {
   if (filters.tag) params.append('tag', filters.tag);
 
   try {
-    const response = await fetch(`${GAS_URL}?${params.toString()}`, { credentials: 'include' });
+    const response = await fetch(`${GAS_URL}?${params.toString()}`);
     const data = await response.json();
 
     if (!data.success) {
@@ -36,7 +36,7 @@ export async function fetchTagDefinitions() {
   }
 
   try {
-    const response = await fetch(`${GAS_URL}?action=tag_definitions`, { credentials: 'include' });
+    const response = await fetch(`${GAS_URL}?action=tag_definitions`);
     const data = await response.json();
 
     if (!data.success) {
@@ -58,7 +58,7 @@ export async function fetchSettings() {
   }
 
   try {
-    const response = await fetch(`${GAS_URL}?action=settings`, { credentials: 'include' });
+    const response = await fetch(`${GAS_URL}?action=settings`);
     const data = await response.json();
 
     if (!data.success) {
@@ -121,7 +121,6 @@ async function postToGAS(action, payload) {
   try {
     const response = await fetch(`${GAS_URL}?action=${action}`, {
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(payload),
       headers: {
         'Content-Type': 'application/json'
