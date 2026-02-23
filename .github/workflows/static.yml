@@ -26,7 +26,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Inject GAS URL from secret
-        run: sed -i 's|__GAS_URL__|${{ secrets.GAS_URL }}|g' app/api.js
+        env:
+          GAS_URL: ${{ secrets.GAS_URL }}
+        run: sed -i "s|__GAS_URL__|${GAS_URL}|g" app/api.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
