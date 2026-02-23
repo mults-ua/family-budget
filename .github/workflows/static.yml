@@ -28,7 +28,17 @@ jobs:
       - name: Inject GAS URL from secret
         env:
           GAS_URL: ${{ secrets.GAS_URL }}
-        run: sed -i "s|__GAS_URL__|${GAS_URL}|g" app/api.js
+        run: |
+          if [ -z "${GAS_URL}" ]; then
+            echo "ERROR: GAS_URL secret is empty or not set"
+            exit 1
+          fi
+          sed -i "s|__GAS_URL__|${GAS_URL}|g" app/api.js
+          if grep -q '__GAS_URL__' app/api.js; then
+            echo "ERROR: placeholder still present after sed"
+            exit 1
+          fi
+          echo "Injection OK — first line: $(head -4 app/api.js | tail -1)"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
