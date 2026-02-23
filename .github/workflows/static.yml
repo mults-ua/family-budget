@@ -47,13 +47,14 @@ jobs:
           echo "=== api.js line 4 after injection ==="
           sed -n '4p' app/api.js
 
-      - name: Verify and stage changes
+      - name: Stage injected api.js
         run: |
-          echo "=== api.js line 4 (pre-upload check) ==="
-          sed -n '4p' app/api.js
-          echo "=== creating filesystem-only marker file ==="
-          echo "deployed-$(git rev-parse --short HEAD)-$(date +%s)" > _deploy_marker.txt
-          cat _deploy_marker.txt
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add app/api.js
+          git commit -m "inject GAS_URL [skip ci]"
+          echo "=== committed api.js line 4 ==="
+          git show HEAD:app/api.js | sed -n '4p'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
