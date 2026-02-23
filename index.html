@@ -81,6 +81,15 @@
     </div>
   </main>
 
+  <!-- Debug Panel (visible only when ?debug=1) -->
+  <div id="debug-panel" class="hidden fixed bottom-0 left-0 right-0 bg-gray-900 text-green-400 font-mono text-xs p-4 max-h-56 overflow-auto z-50 border-t-2 border-yellow-400">
+    <div class="flex justify-between items-center mb-2">
+      <strong class="text-yellow-400">DEBUG MODE</strong>
+      <button onclick="document.getElementById('debug-panel').classList.add('hidden')" class="text-gray-400 hover:text-white">✕ close</button>
+    </div>
+    <pre id="debug-output" class="whitespace-pre-wrap">Loading...</pre>
+  </div>
+
   <!-- Scripts -->
   <script type="module">
     import * as add from './app/add.js';
@@ -158,6 +167,42 @@
 
     // Initialize app on load
     document.addEventListener('DOMContentLoaded', initializeApp);
+
+    // Debug mode — activate with ?debug=1
+    if (new URLSearchParams(window.location.search).get('debug') === '1') {
+      document.getElementById('debug-panel').classList.remove('hidden');
+
+      async function refreshDebug() {
+        const { getDebugInfo } = await import('./app/api.js');
+        const { gasUrl } = getDebugInfo();
+
+        const gasStatus = gasUrl === '__GAS_URL__'
+          ? '❌ NOT INJECTED — still placeholder'
+          : gasUrl.startsWith('https://script.google.com')
+            ? `✅ OK — ${gasUrl.substring(0, 60)}...`
+            : `⚠️  UNEXPECTED VALUE — ${gasUrl}`;
+
+        const swReg = 'serviceWorker' in navigator
+          ? await navigator.serviceWorker.getRegistration()
+          : null;
+        const swState = swReg
+          ? `scope=${swReg.scope}  active=${swReg.active?.scriptURL?.split('/').pop() ?? 'none'}  installing=${swReg.installing ? 'yes' : 'no'}`
+          : 'not registered';
+
+        const cacheNames = await caches.keys();
+
+        const lines = [
+          `GAS_URL : ${gasStatus}`,
+          `SW      : ${swState}`,
+          `Caches  : ${cacheNames.join(', ') || 'none'}`,
+          `Time    : ${new Date().toISOString()}`,
+        ];
+        document.getElementById('debug-output').textContent = lines.join('\n');
+      }
+
+      refreshDebug();
+      setInterval(refreshDebug, 5000);
+    }
   </script>
 </body>
 </html>

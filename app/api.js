@@ -149,3 +149,11 @@ export function clearCaches() {
   sessionStorage.removeItem('tag_definitions_cache');
   sessionStorage.removeItem('settings_cache');
 }
+
+// ============================================================================
+// Debug
+// ============================================================================
+
+export function getDebugInfo() {
+  return { gasUrl: GAS_URL };
+}
