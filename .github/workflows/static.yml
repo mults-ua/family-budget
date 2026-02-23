@@ -29,16 +29,23 @@ jobs:
         env:
           GAS_URL: ${{ secrets.GAS_URL }}
         run: |
-          if [ -z "${GAS_URL}" ]; then
-            echo "ERROR: GAS_URL secret is empty or not set"
-            exit 1
-          fi
-          sed -i "s|__GAS_URL__|${GAS_URL}|g" app/api.js
-          if grep -q '__GAS_URL__' app/api.js; then
-            echo "ERROR: placeholder still present after sed"
-            exit 1
-          fi
-          echo "Injection OK — first line: $(head -4 app/api.js | tail -1)"
+          echo "GAS_URL length: ${#GAS_URL}"
+          python3 - <<'PYEOF'
+          import os, sys
+          url = os.environ.get('GAS_URL', '')
+          if not url:
+              print('ERROR: GAS_URL is empty'); sys.exit(1)
+          with open('app/api.js', 'r') as f:
+              content = f.read()
+          if '__GAS_URL__' not in content:
+              print('ERROR: placeholder not found in api.js'); sys.exit(1)
+          content = content.replace('__GAS_URL__', url)
+          with open('app/api.js', 'w') as f:
+              f.write(content)
+          print('Injection OK')
+          PYEOF
+          echo "=== api.js line 4 after injection ==="
+          sed -n '4p' app/api.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
