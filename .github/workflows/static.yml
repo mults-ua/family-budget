@@ -47,6 +47,14 @@ jobs:
           echo "=== api.js line 4 after injection ==="
           sed -n '4p' app/api.js
 
+      - name: Verify and stage changes
+        run: |
+          echo "=== api.js line 4 (pre-upload check) ==="
+          sed -n '4p' app/api.js
+          echo "=== creating filesystem-only marker file ==="
+          echo "deployed-$(git rev-parse --short HEAD)-$(date +%s)" > _deploy_marker.txt
+          cat _deploy_marker.txt
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
