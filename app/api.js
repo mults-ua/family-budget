@@ -119,11 +119,13 @@ export async function restoreTransaction(id) {
 
 async function postToGAS(action, payload) {
   try {
+    // text/plain avoids CORS preflight (OPTIONS) which GAS cannot handle.
+    // GAS still receives e.postData.contents as a JSON string.
     const response = await fetch(`${GAS_URL}?action=${action}`, {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/plain'
       }
     });
 
